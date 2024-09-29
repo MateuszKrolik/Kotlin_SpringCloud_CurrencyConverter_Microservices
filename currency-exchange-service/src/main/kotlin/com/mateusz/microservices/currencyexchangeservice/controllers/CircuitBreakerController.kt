@@ -1,6 +1,8 @@
 package com.mateusz.microservices.currencyexchangeservice.controllers
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter
 // import io.github.resilience4j.retry.annotation.Retry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,11 +21,15 @@ class CircuitBreakerController {
 
     @GetMapping("/sample-api")
     // @Retry(name = "sample-api", fallbackMethod = "hardCodedResponse")
-    @CircuitBreaker(name = "default", fallbackMethod = "hardCodedResponse")
+    // @CircuitBreaker(name = "default", fallbackMethod = "hardCodedResponse")
+    // @RateLimiter(name = "default")
+    @Bulkhead(name = "default") // nr of concurrent calls allowed
+    // 10s -> 10k calls to sample api
     fun sampleApi():String {
         logger.info("Sample Api Call Received")
-        val forEntity = RestTemplate().getForEntity("http://localhost:8080/some-dummy-url", String::class.java)
-        return forEntity.body!!
+//        val forEntity = RestTemplate().getForEntity("http://localhost:8080/some-dummy-url", String::class.java)
+//        return forEntity.body!!
+        return "sample-api"
     }
 
     fun hardCodedResponse(ex: Exception): String {
