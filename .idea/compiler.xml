@@ -9,11 +9,13 @@
         <module name="api-gateway" />
         <module name="currency-exchange-service" />
         <module name="currency-conversion-service" />
-        <module name="limits-service" />
-        <module name="spring-cloud-config-server" />
         <module name="naming-server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="limits-service" target="21" />
+      <module name="spring-cloud-config-server" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

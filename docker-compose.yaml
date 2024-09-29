@@ -18,6 +18,23 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
 
+  currency-conversion:
+    image: mateuszkrolik/microservices-currency-conversion-service:0.0.1-SNAPSHOT
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    ports:
+      - "8100:8100"
+    env_file:
+      - .env
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+
   naming-server:
     image: mateuszkrolik/microservices-naming-server:0.0.1-SNAPSHOT
     deploy:
