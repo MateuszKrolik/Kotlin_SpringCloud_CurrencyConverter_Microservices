@@ -24,7 +24,9 @@ class CurrencyExchangeController(private var environment: Environment, private v
             ?: throw RuntimeException("Unable to find data for $from and $to") // unchecked exc
 
         val port = environment.getProperty("local.server.port")
-        currencyExchange.environment = port!!
+        val version = "v1"
+        val host = environment.getProperty("HOSTNAME")
+        currencyExchange.environment = port!! + " " + version + " " + host
         return currencyExchange
     }
 }
