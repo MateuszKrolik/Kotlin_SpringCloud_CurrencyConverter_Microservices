@@ -1,5 +1,6 @@
 package com.mateusz.microservices.currencyconversionservice.controllers
 
+import com.mateusz.microservices.currencyconversionservice.config.RestTemplateConfiguration
 import com.mateusz.microservices.currencyconversionservice.dto.CurrencyConversion
 import com.mateusz.microservices.currencyconversionservice.dto.CurrencyExchange
 import com.mateusz.microservices.currencyconversionservice.feign.CurrencyExchangeProxy
@@ -11,7 +12,7 @@ import java.math.BigDecimal
 import java.util.*
 
 @RestController
-class CurrencyConversionController(private val currencyExchangeProxy: CurrencyExchangeProxy) {
+class CurrencyConversionController(private val currencyExchangeProxy: CurrencyExchangeProxy, private val restTemplate: RestTemplate) {
 
 
     @GetMapping("/currency-conversion/from/{from}/to/{to}/quantity/{quantity}")
@@ -21,7 +22,7 @@ class CurrencyConversionController(private val currencyExchangeProxy: CurrencyEx
         uriVariables["from"] = from
         uriVariables["to"] = to
 
-        val responseEntity = RestTemplate().getForEntity(
+        val responseEntity = restTemplate.getForEntity(
             "http://localhost:8000/currency-exchange/from/{from}/to/{to}",
             CurrencyExchange::class.java,
             uriVariables

@@ -2,11 +2,11 @@
 
 - http://localhost:8000/currency-exchange/from/USD/to/PLN
 
-2. Currency Exchange Service:
+2. Currency Conversion Service:
 
-- http://localhost:8000/currency-conversion/from/USD/to/PLN/quantity/10
+- http://localhost:8100/currency-conversion/from/USD/to/PLN/quantity/10
 
-- http://localhost:8000/currency-conversion-feign/from/USD/to/PLN/quantity/10
+- http://localhost:8100/currency-conversion-feign/from/USD/to/PLN/quantity/10
 
 3. Eureka Naming Server:
 
