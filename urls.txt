@@ -1,0 +1,8 @@
+Gateway:
+
+- http://localhost:8765/currency-exchange/currency-exchange/from/USD/to/PLN
+
+- http://localhost:8765/currency-conversion/currency-conversion/from/USD/to/PLN/quantity/10
+
+- http://localhost:8765/currency-conversion/currency-conversion-feign/from/USD/to/PLN/quantity/10
+
