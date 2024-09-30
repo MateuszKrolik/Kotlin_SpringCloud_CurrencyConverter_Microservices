@@ -27,7 +27,7 @@ kubectl get svc
 
 # minikube tunnel # load balancer
 
-# curl http://34.38.187.41:8000/currency-exchange/from/USD/to/PLN
+# curl http://34.77.186.79:8000/currency-exchange/from/USD/to/PLN
 
 # k get deployment currency-exchange -o yaml >> deployment.yaml
 # k get service currency-exchange -o yaml >> service.yaml

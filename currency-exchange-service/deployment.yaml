@@ -110,3 +110,5 @@ spec:
   type: LoadBalancer
 
 # kubectl create secret generic db-credentials --from-env-file=.env
+# kubectl delete all -l app=currency-exchange
+# kubectl apply -f deployment.yaml
