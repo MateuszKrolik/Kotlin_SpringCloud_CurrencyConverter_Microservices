@@ -30,9 +30,12 @@ spec:
       - image: mateuszkrolik/microservices-currency-conversion-service:0.0.1-SNAPSHOT
         imagePullPolicy: IfNotPresent
         name: microservices-currency-conversion-service
-        env:
-          - name: CURRENCY_EXCHANGE_URI
-            value: http://currency-exchange
+        envFrom:
+          - configMapRef:
+              name: currency-conversion
+#        env:
+#          - name: CURRENCY_EXCHANGE_URI
+#            value: http://currency-exchange
         resources:
           limits:
             ephemeral-storage: 1Gi
@@ -89,6 +92,16 @@ spec:
     app: currency-conversion
   sessionAffinity: None
   type: LoadBalancer
+---
+apiVersion: v1
+data:
+  CURRENCY_EXCHANGE_URI: "http://currency-exchange"
+kind: ConfigMap
+metadata:
+  name: currency-conversion
+  namespace: default
 
 # kubectl delete all -l app=currency-conversion
 # kubectl apply -f deployment.yaml
+# k create configmap currency-conversion --from-literal=CURRENCY_EXCHANGE_URI=http://currency-exchange
+# k get configmap currency-conversion -o yaml >> configmap.yaml
