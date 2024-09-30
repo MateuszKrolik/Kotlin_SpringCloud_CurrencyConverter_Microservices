@@ -54,6 +54,14 @@ spec:
         image: mateuszkrolik/microservices-currency-exchange-service:0.0.1-SNAPSHOT
         imagePullPolicy: IfNotPresent
         name: microservices-currency-exchange-service
+        readinessProbe:
+          httpGet:
+            port: 8000
+            path: /actuator/health/readiness
+        livenessProbe:
+          httpGet:
+            port: 8000
+            path: /actuator/health/liveness
         resources:
           limits:
             ephemeral-storage: 1Gi
@@ -108,6 +116,7 @@ spec:
     app: currency-exchange
   sessionAffinity: None
   type: LoadBalancer
+  loadBalancerIP: "34.38.248.160"
 
 # kubectl create secret generic db-credentials --from-env-file=.env
 # kubectl delete all -l app=currency-exchange

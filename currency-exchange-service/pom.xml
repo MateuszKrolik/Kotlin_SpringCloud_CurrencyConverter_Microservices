@@ -100,21 +100,20 @@
     Observation (Metrics & Logs) + Tracing.
 -->
 
-		<!-- CHANGE K8s ->
-<!-		<dependency>-->
-<!--			<groupId>io.micrometer</groupId>-->
-<!--			<artifactId>micrometer-observation</artifactId>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-otel</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-observation</artifactId>
+		</dependency>
 
 		<!-- OPTION 1: Open Telemetry as Bridge (RECOMMENDED) -->
 		<!-- Open Telemetry
             - Simplified Observability (metrics, logs, and traces) -->
 
-		<!-- CHANGE K8s ->
-<!-		<dependency>-->
-<!--			<groupId>io.micrometer</groupId>-->
-<!--			<artifactId>micrometer-tracing-bridge-otel</artifactId>-->
-<!--		</dependency>-->
 
 		<!-- CHANGE K8s ->
 <!-		<dependency>-->

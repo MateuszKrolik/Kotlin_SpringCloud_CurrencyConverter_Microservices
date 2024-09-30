@@ -16,7 +16,7 @@ kubectl get svc
 
 # minikube tunnel # local load balancer
 
-# curl  http://104.155.107.27:8100/currency-conversion-feign/from/USD/to/PLN/quantity/10
+# curl  http://34.38.248.160:8100/currency-conversion-feign/from/USD/to/PLN/quantity/10
 
 # k get deployment currency-conversion -o yaml >> deployment.yaml
 # k get service currency-conversion -o yaml >> service.yaml
