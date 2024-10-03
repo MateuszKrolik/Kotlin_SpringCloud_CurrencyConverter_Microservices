@@ -56,10 +56,11 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
+		<!--CHANGE K8s (ConfigMaps & Service Discovery)-->
+		<!--		<dependency>-->
+<!--			<groupId>org.springframework.cloud</groupId>-->
+<!--			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -102,10 +103,17 @@ Observation (Metrics & Logs) + Tracing.
 			<artifactId>micrometer-tracing-bridge-otel</artifactId>
 		</dependency>
 
+		<!-- CHANGE K8s -->
+<!--		<dependency>-->
+<!--			<groupId>io.opentelemetry</groupId>-->
+<!--			<artifactId>opentelemetry-exporter-zipkin</artifactId>-->
+<!--		</dependency>-->
+		<!-- CHANGE K8s -->
 		<dependency>
-			<groupId>io.opentelemetry</groupId>
-			<artifactId>opentelemetry-exporter-zipkin</artifactId>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-kubernetes-client-all</artifactId>
 		</dependency>
+
 
 	</dependencies>
 	<dependencyManagement>
