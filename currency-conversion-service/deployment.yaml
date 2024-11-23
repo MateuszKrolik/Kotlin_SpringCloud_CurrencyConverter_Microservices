@@ -100,7 +100,6 @@ spec:
     app: currency-conversion
   sessionAffinity: None
   type: LoadBalancer
-  loadBalancerIP: "34.38.248.160"
 ---
 apiVersion: v1
 data:
