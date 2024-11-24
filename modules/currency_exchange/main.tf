@@ -27,52 +27,21 @@ resource "kubernetes_deployment" "currency_exchange" {
           image = "mateuszkrolik/microservices-currency-exchange-service:0.0.1-SNAPSHOT"
           name  = "currency-exchange"
 
-          env {
-            name = "DB_HOSTNAME"
-            value_from {
-              secret_key_ref {
-                name = var.db_secret_name
-                key  = "DB_HOSTNAME"
-              }
+          dynamic "env" {
+            for_each = {
+              DB_HOSTNAME = "DB_HOSTNAME"
+              DB_PORT     = "DB_PORT"
+              DB_NAME     = "DB_NAME"
+              DB_USERNAME = "DB_USERNAME"
+              DB_PASSWORD = "DB_PASSWORD"
             }
-          }
-
-          env {
-            name = "DB_PORT"
-            value_from {
-              secret_key_ref {
-                name = var.db_secret_name
-                key  = "DB_PORT"
-              }
-            }
-          }
-
-          env {
-            name = "DB_NAME"
-            value_from {
-              secret_key_ref {
-                name = var.db_secret_name
-                key  = "DB_NAME"
-              }
-            }
-          }
-
-          env {
-            name = "DB_USERNAME"
-            value_from {
-              secret_key_ref {
-                name = var.db_secret_name
-                key  = "DB_USERNAME"
-              }
-            }
-          }
-
-          env {
-            name = "DB_PASSWORD"
-            value_from {
-              secret_key_ref {
-                name = var.db_secret_name
-                key  = "DB_PASSWORD"
+            content {
+              name = env.key
+              value_from {
+                secret_key_ref {
+                  name = var.db_secret_name
+                  key  = env.value
+                }
               }
             }
           }
@@ -117,23 +86,6 @@ resource "kubernetes_deployment" "currency_exchange" {
           }
         }
       }
-    }
-  }
-}
-
-resource "kubernetes_service" "currency_exchange" {
-  metadata {
-    name = "currency-exchange-new"
-  }
-
-  spec {
-    selector = {
-      app = "currency-exchange"
-    }
-
-    port {
-      port        = 8000
-      target_port = 8000
     }
   }
 }

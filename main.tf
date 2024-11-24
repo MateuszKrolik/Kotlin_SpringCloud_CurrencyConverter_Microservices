@@ -35,40 +35,6 @@ resource "kubernetes_config_map" "currency_config" {
   }
 }
 
-resource "kubernetes_service" "currency_exchange" {
-  metadata {
-    name = "currency-exchange"
-  }
-
-  spec {
-    selector = {
-      app = "currency-exchange"
-    }
-
-    port {
-      port        = 8000
-      target_port = 8000
-    }
-  }
-}
-
-resource "kubernetes_service" "currency_conversion" {
-  metadata {
-    name = "currency-conversion"
-  }
-
-  spec {
-    selector = {
-      app = "currency-conversion"
-    }
-
-    port {
-      port        = 8100
-      target_port = 8100
-    }
-  }
-}
-
 resource "kubernetes_ingress_v1" "currency_ingress" {
   metadata {
     name = "currency-ingress"
@@ -78,20 +44,12 @@ resource "kubernetes_ingress_v1" "currency_ingress" {
   }
 
   spec {
-    tls {
-      hosts      = ["currency-conversion.info"]
-      secret_name = "currency-ingress-tls"
-    }
-
     rule {
-      host = "currency-conversion.info"
       http {
         path {
-          path = "/currency-exchange"
-          path_type = "Prefix"
           backend {
             service {
-              name = kubernetes_service.currency_exchange.metadata[0].name
+              name = "currency-services-exchange"  # Update to match your Helm service names
               port {
                 number = 8000
               }
@@ -99,11 +57,9 @@ resource "kubernetes_ingress_v1" "currency_ingress" {
           }
         }
         path {
-          path = "/currency-conversion-feign"
-          path_type = "Prefix"
           backend {
             service {
-              name = kubernetes_service.currency_conversion.metadata[0].name
+              name = "currency-services-conversion"  # Update to match your Helm service names
               port {
                 number = 8100
               }
@@ -126,6 +82,29 @@ resource "helm_release" "currency_services" {
   repository = "https://charts.helm.sh/stable"
   chart      = "./currency-services"
   timeout    = 600 # 10 minutes
+
+  # Add any dynamic values you want to pass to Helm
+  set {
+    name  = "currencyExchange.service.port"
+    value = "8000"
+  }
+
+  set {
+    name  = "currencyConversion.service.port"
+    value = "8100"
+  }
+
+  # For sensitive values like database credentials
+  set_sensitive {
+    name  = "database.username"
+    value = var.db_username
+  }
+
+  set_sensitive {
+    name  = "database.password"
+    value = var.db_password
+  }
+
   values = [
     file("currency-services/values.yaml"),
     file("currency-services/values.secret.yaml")

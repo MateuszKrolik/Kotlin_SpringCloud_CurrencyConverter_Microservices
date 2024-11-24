@@ -63,20 +63,3 @@ resource "kubernetes_deployment" "currency_conversion" {
     }
   }
 }
-
-resource "kubernetes_service" "currency_conversion" {
-  metadata {
-    name = "currency-conversion-new"
-  }
-
-  spec {
-    selector = {
-      app = "currency-conversion"
-    }
-
-    port {
-      port        = 8100
-      target_port = 8100
-    }
-  }
-}

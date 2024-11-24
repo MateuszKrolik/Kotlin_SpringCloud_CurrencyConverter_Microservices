@@ -39,47 +39,25 @@ resource "kubernetes_cron_job_v1" "currency_update" {
                 }
               }
 
-              env {
-                name = "DB_PORT"
-                value_from {
-                  secret_key_ref {
-                    name = var.db_secret_name
-                    key  = "DB_PORT"
-                  }
+              dynamic "env" {
+                for_each = {
+                  DB_HOSTNAME = "DB_HOSTNAME"
+                  DB_PORT     = "DB_PORT"
+                  DB_NAME     = "DB_NAME"
+                  DB_USERNAME = "DB_USERNAME"
+                  DB_PASSWORD = "DB_PASSWORD"
                 }
-              }
-
-              env {
-                name = "DB_NAME"
-                value_from {
-                  secret_key_ref {
-                    name = var.db_secret_name
-                    key  = "DB_NAME"
-                  }
-                }
-              }
-
-              env {
-                name = "DB_USERNAME"
-                value_from {
-                  secret_key_ref {
-                    name = var.db_secret_name
-                    key  = "DB_USERNAME"
-                  }
-                }
-              }
-
-              env {
-                name = "DB_PASSWORD"
-                value_from {
-                  secret_key_ref {
-                    name = var.db_secret_name
-                    key  = "DB_PASSWORD"
+                content {
+                  name = env.key
+                  value_from {
+                    secret_key_ref {
+                      name = var.db_secret_name
+                      key  = env.value
+                    }
                   }
                 }
               }
             }
-
             restart_policy = "OnFailure"
           }
         }
