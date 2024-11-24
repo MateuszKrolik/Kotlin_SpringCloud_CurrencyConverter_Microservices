@@ -1,0 +1,10 @@
+CURRENCY_CONVERSION:
+    - curl -k https://currency.local/currency-conversion-feign/from/USD/to/PLN/quantity/10
+CURRENCY_EXCHANGE:
+    - curl -k https://currency.local/currency-exchange/from/USD/to/PLN
+JMX:
+    - kubectl port-forward deployment/currency-exchange 9404:9404
+    - curl localhost:9404/metrics
+        - curl localhost:9404/metrics | grep jvm_memory
+        - curl localhost:9404/metrics | grep jvm_threads
+        - curl localhost:9404/metrics | grep http

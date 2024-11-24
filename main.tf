@@ -49,7 +49,7 @@ resource "kubernetes_ingress_v1" "currency_ingress" {
         path {
           backend {
             service {
-              name = "currency-services-exchange"  # Update to match your Helm service names
+              name = "currency-services-exchange"
               port {
                 number = 8000
               }
@@ -59,7 +59,7 @@ resource "kubernetes_ingress_v1" "currency_ingress" {
         path {
           backend {
             service {
-              name = "currency-services-conversion"  # Update to match your Helm service names
+              name = "currency-services-conversion"
               port {
                 number = 8100
               }
@@ -83,7 +83,6 @@ resource "helm_release" "currency_services" {
   chart      = "./currency-services"
   timeout    = 600 # 10 minutes
 
-  # Add any dynamic values you want to pass to Helm
   set {
     name  = "currencyExchange.service.port"
     value = "8000"
@@ -94,7 +93,6 @@ resource "helm_release" "currency_services" {
     value = "8100"
   }
 
-  # For sensitive values like database credentials
   set_sensitive {
     name  = "database.username"
     value = var.db_username
