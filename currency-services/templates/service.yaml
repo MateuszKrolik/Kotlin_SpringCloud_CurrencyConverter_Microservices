@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "currency-services.fullname" . }}-currency-exchange
+  labels:
+    app: {{ include "currency-services.name" . }}-currency-exchange
+spec:
+  type: {{ .Values.service.currencyExchange.type }}
+  ports:
+    - port: {{ .Values.service.currencyExchange.port }}
+      targetPort: {{ .Values.service.currencyExchange.port }}
+  selector:
+    app: {{ include "currency-services.name" . }}-currency-exchange
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "currency-services.fullname" . }}-currency-conversion
+  labels:
+    app: {{ include "currency-services.name" . }}-currency-conversion
+spec:
+  type: {{ .Values.service.currencyConversion.type }}
+  ports:
+    - port: {{ .Values.service.currencyConversion.port }}
+      targetPort: {{ .Values.service.currencyConversion.port }}
+  selector:
+    app: {{ include "currency-services.name" . }}-currency-conversion

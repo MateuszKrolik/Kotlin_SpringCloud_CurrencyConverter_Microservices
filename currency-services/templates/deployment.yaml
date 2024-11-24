@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "currency-services.fullname" . }}-currency-exchange
+  labels:
+    app: {{ include "currency-services.name" . }}-currency-exchange
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "currency-services.name" . }}-currency-exchange
+  template:
+    metadata:
+      labels:
+        app: {{ include "currency-services.name" . }}-currency-exchange
+    spec:
+      containers:
+        - name: {{ include "currency-services.fullname" . }}-currency-exchange
+          image: "{{ .Values.image.currencyExchange.repository }}:{{ .Values.image.currencyExchange.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.currencyExchange.port }}
+          env:
+            - name: DB_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: dbHostname
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: dbPort
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: dbName
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: dbUsername
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: dbPassword
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: {{ .Values.service.currencyExchange.port }}
+            initialDelaySeconds: 150
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: {{ .Values.service.currencyExchange.port }}
+            initialDelaySeconds: 120
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "currency-services.fullname" . }}-currency-conversion
+  labels:
+    app: {{ include "currency-services.name" . }}-currency-conversion
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "currency-services.name" . }}-currency-conversion
+  template:
+    metadata:
+      labels:
+        app: {{ include "currency-services.name" . }}-currency-conversion
+    spec:
+      containers:
+        - name: {{ include "currency-services.fullname" . }}-currency-conversion
+          image: "{{ .Values.image.currencyConversion.repository }}:{{ .Values.image.currencyConversion.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.currencyConversion.port }}
+          env:
+            - name: CURRENCY_EXCHANGE_URI
+              value: "http://{{ include "currency-services.fullname" . }}-currency-exchange"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: {{ .Values.service.currencyConversion.port }}
+            initialDelaySeconds: 150
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: {{ .Values.service.currencyConversion.port }}
+            initialDelaySeconds: 120
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10

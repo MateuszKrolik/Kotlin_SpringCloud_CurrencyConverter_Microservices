@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  pullPolicy: IfNotPresent
+  currencyExchange:
+    repository: mateuszkrolik/microservices-currency-exchange-service
+    tag: "0.0.1-SNAPSHOT"
+  currencyConversion:
+    repository: mateuszkrolik/microservices-currency-conversion-service
+    tag: "0.0.1-SNAPSHOT"
+
+service:
+  currencyExchange:
+    type: ClusterIP
+    port: 8000
+  currencyConversion:
+    type: ClusterIP
+    port: 8100
+
+ingress:
+  className: nginx
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: currency.local
+      paths:
+        - path: /currency-exchange
+          pathType: ImplementationSpecific
+        - path: /currency-conversion-feign
+          pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - currency.local
+      secretName: currency-ingress-tls
+
+configmap:
+  currencyExchangeUri: "http://currency-services-currency-exchange"

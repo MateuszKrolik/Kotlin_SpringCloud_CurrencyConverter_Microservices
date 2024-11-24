@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - hosts:
+        - currency.local
+      secretName: currency-ingress-tls
+  rules:
+    - host: currency.local
+      http:
+        paths:
+          - path: /currency-exchange
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "currency-services.fullname" . }}-currency-exchange
+                port:
+                  number: {{ .Values.service.currencyExchange.port }}
+          - path: /currency-conversion-feign
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "currency-services.fullname" . }}-currency-conversion
+                port:
+                  number: {{ .Values.service.currencyConversion.port }}
