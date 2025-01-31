@@ -38,7 +38,7 @@ configmap:
   currencyExchangeUri: "http://currency-services-currency-exchange"
 
 secret:
-  dbHostname: "postgres"
+  dbHostname: "postgres.database.svc.cluster.local"
   dbPort: "5432"
   dbName: "currency_exchange"
   dbUsername: "postgres"

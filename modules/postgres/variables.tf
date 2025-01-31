@@ -12,3 +12,8 @@ variable "db_password" {
   description = "Database password"
   type        = string
 }
+
+variable "namespace" {
+  description = "The namespace to deploy the resources"
+  type        = string
+}

@@ -15,15 +15,35 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
+
+resource "kubernetes_namespace" "services" {
+  metadata {
+    name = "services"
+  }
+}
+
+resource "kubernetes_namespace" "database" {
+  metadata {
+    name = "database"
+  }
+}
+
 module "currency_exchange" {
   source          = "./modules/currency_exchange"
   db_secret_name  = kubernetes_secret.db_secret.metadata[0].name
+  namespace   = kubernetes_namespace.services.metadata[0].name
 }
 
 module "currency_conversion" {
   source          = "./modules/currency_conversion"
   config_map_name = kubernetes_config_map.currency_config.metadata[0].name
   image_name      = docker_image.currency_conversion.name
+  namespace   = kubernetes_namespace.services.metadata[0].name
 }
 
 module "postgres" {
@@ -31,11 +51,13 @@ module "postgres" {
   db_name     = var.db_name
   db_username = var.db_username
   db_password = var.db_password
+  namespace   = kubernetes_namespace.database.metadata[0].name
 }
 
 resource "kubernetes_config_map" "currency_config" {
   metadata {
     name = var.config_map_name
+    namespace = kubernetes_namespace.services.metadata[0].name
   }
 
   data = {
@@ -49,6 +71,7 @@ resource "kubernetes_ingress_v1" "currency_ingress" {
     annotations = {
       "nginx.ingress.kubernetes.io/ssl-redirect" = "true"
     }
+    namespace = kubernetes_namespace.services.metadata[0].name
   }
 
   spec {
@@ -79,17 +102,13 @@ resource "kubernetes_ingress_v1" "currency_ingress" {
   }
 }
 
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
 
 resource "helm_release" "currency_services" {
   name       = "currency-services"
   repository = "https://charts.helm.sh/stable"
   chart      = "./currency-services"
   timeout    = 600 # 10 minutes
+  namespace = kubernetes_namespace.services.metadata[0].name
 
   set {
     name  = "currencyExchange.service.port"

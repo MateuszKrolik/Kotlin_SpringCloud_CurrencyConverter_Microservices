@@ -6,3 +6,8 @@ variable "config_map_name" {
 variable "image_name" {
   type = string
 }
+
+variable "namespace" {
+  description = "The namespace to deploy the resources"
+  type        = string
+}

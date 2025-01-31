@@ -1,6 +1,7 @@
 resource "kubernetes_config_map" "jmx_config" {
   metadata {
     name = "jmx-config"
+    namespace = var.namespace
   }
 
   data = {
@@ -20,6 +21,7 @@ resource "kubernetes_deployment" "currency_exchange" {
     labels = {
       app = "currency-exchange"
     }
+    namespace = var.namespace
   }
 
   spec {
@@ -47,7 +49,7 @@ resource "kubernetes_deployment" "currency_exchange" {
           name  = "init-db-check"
           image = "postgres:17-alpine"
 
-          command = ["sh", "-c", "until pg_isready -h postgres -p 5432; do echo waiting for database; sleep 2; done;"]
+          command = ["sh", "-c", "until pg_isready -h postgres.database.svc.cluster.local -p 5432; do echo waiting for database; sleep 2; done;"]
 
           env {
             name = "PGUSER"
@@ -194,6 +196,7 @@ resource "kubernetes_deployment" "currency_exchange" {
 resource "kubernetes_horizontal_pod_autoscaler_v2" "currency_exchange" {
   metadata {
     name = "currency-exchange"
+    namespace = var.namespace
   }
 
   spec {

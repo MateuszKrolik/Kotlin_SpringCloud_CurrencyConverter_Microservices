@@ -4,6 +4,7 @@ resource "kubernetes_deployment" "currency_conversion" {
     labels = {
       app = "currency-conversion"
     }
+    namespace = var.namespace
   }
 
   spec {

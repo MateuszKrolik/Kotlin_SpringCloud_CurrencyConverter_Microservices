@@ -21,6 +21,7 @@ resource "kubernetes_persistent_volume" "postgres_pv" {
 resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
   metadata {
     name = "postgres-pvc"
+    namespace = var.namespace
   }
 
   spec {
@@ -37,6 +38,7 @@ resource "kubernetes_persistent_volume_claim" "postgres_pvc" {
 resource "kubernetes_stateful_set" "postgres" {
   metadata {
     name = "postgres"
+    namespace = var.namespace
   }
 
   spec {
@@ -101,6 +103,7 @@ resource "kubernetes_stateful_set" "postgres" {
 resource "kubernetes_service" "postgres" {
   metadata {
     name = "postgres"
+    namespace = var.namespace
   }
 
   spec {
