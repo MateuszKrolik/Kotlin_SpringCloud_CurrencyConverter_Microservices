@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "3.0.2"
+    }
+  }
+}
+
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
+
 provider "kubernetes" {
   config_path = "~/.kube/config"
 }
@@ -10,6 +23,7 @@ module "currency_exchange" {
 module "currency_conversion" {
   source          = "./modules/currency_conversion"
   config_map_name = kubernetes_config_map.currency_config.metadata[0].name
+  image_name      = docker_image.currency_conversion.name
 }
 
 module "postgres" {
@@ -17,12 +31,6 @@ module "postgres" {
   db_name     = var.db_name
   db_username = var.db_username
   db_password = var.db_password
-}
-
-module "currency_update" {
-  source          = "./modules/currency_update"
-  config_map_name = kubernetes_config_map.currency_config.metadata[0].name
-  db_secret_name  = kubernetes_secret.db_secret.metadata[0].name
 }
 
 resource "kubernetes_config_map" "currency_config" {
@@ -105,6 +113,13 @@ resource "helm_release" "currency_services" {
 
   values = [
     file("currency-services/values.yaml"),
-    file("currency-services/values.secret.yaml")
   ]
+}
+
+resource "docker_image" "currency_conversion" {
+  name         = "currency-conversion-service:local"
+  build {
+    context    = "${path.module}/currency-conversion-service"
+    dockerfile = "Dockerfile"
+  }
 }

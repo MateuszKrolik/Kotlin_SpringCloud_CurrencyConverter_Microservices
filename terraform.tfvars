@@ -1,11 +1,5 @@
-# terraform.tfvars
 db_hostname = "postgres"
 db_port     = "5432"
 db_name     = "currency_exchange"
 db_username = "postgres"
 db_password = "mysecretpassword"
-# db_hostname = "postgres-2105.jxf.gcp-europe-west1.cockroachlabs.cloud"
-# db_port     = "26257"
-# db_name     = "defaultdb"
-# db_username = "mateusz"
-# db_password = "WWHyuCRHtdM-JMt56X0vtg"

@@ -6,8 +6,8 @@ image:
     repository: mateuszkrolik/microservices-currency-exchange-service
     tag: "0.0.1-SNAPSHOT"
   currencyConversion:
-    repository: mateuszkrolik/microservices-currency-conversion-service
-    tag: "0.0.1-SNAPSHOT"
+    repository: currency-conversion-service
+    tag: "local"
 
 service:
   currencyExchange:
@@ -36,3 +36,17 @@ ingress:
 
 configmap:
   currencyExchangeUri: "http://currency-services-currency-exchange"
+
+secret:
+  dbHostname: "postgres"
+  dbPort: "5432"
+  dbName: "currency_exchange"
+  dbUsername: "postgres"
+  dbPassword: "mysecretpassword"
+
+autoscaling:
+  currencyExchange:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50

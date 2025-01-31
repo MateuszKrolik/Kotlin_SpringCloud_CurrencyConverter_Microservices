@@ -28,7 +28,7 @@ resource "kubernetes_deployment" "currency_conversion" {
         }
 
         container {
-          image = "mateuszkrolik/microservices-currency-conversion-service:0.0.1-SNAPSHOT"
+          image = var.image_name
           name  = "currency-conversion"
 
           env {

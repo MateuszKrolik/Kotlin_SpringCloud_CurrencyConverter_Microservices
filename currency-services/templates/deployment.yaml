@@ -20,12 +20,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.currencyExchange.port }}
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
           env:
             - name: DB_HOSTNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-secret
-                  key: dbHostname
+                  name: db-secret
+                  key: DB_HOSTNAME
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
@@ -64,6 +71,8 @@ spec:
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 10
+          securityContext:
+            runAsUser: 0    # Run as root user
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -87,6 +96,13 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.currencyConversion.port }}
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
           env:
             - name: CURRENCY_EXCHANGE_URI
               value: "http://{{ include "currency-services.fullname" . }}-currency-exchange"
@@ -94,17 +110,19 @@ spec:
             httpGet:
               path: /actuator/health/readiness
               port: {{ .Values.service.currencyConversion.port }}
-            initialDelaySeconds: 150
-            periodSeconds: 5
-            timeoutSeconds: 5
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: {{ .Values.service.currencyConversion.port }}
-            initialDelaySeconds: 120
-            periodSeconds: 5
-            timeoutSeconds: 5
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 10
+          securityContext:
+            runAsUser: 0    # Run as root user

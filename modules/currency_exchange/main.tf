@@ -39,6 +39,10 @@ resource "kubernetes_deployment" "currency_exchange" {
       }
 
       spec {
+        security_context {
+          run_as_user = 0
+        }
+
         init_container {
           name  = "init-db-check"
           image = "postgres:17-alpine"
@@ -145,6 +149,17 @@ resource "kubernetes_deployment" "currency_exchange" {
             name = "metrics"
           }
 
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "1024Mi"
+            }
+            requests = {
+              cpu    = "250m"
+              memory = "512Mi"
+            }
+          }
+
           args = [
             "9404",
             "/etc/jmx-exporter/config.yaml"
@@ -170,6 +185,34 @@ resource "kubernetes_deployment" "currency_exchange" {
         volume {
           name = "jmx-socket"
           empty_dir {}
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_horizontal_pod_autoscaler_v2" "currency_exchange" {
+  metadata {
+    name = "currency-exchange"
+  }
+
+  spec {
+    scale_target_ref {
+      api_version = "apps/v1"
+      kind        = "Deployment"
+      name        = kubernetes_deployment.currency_exchange.metadata[0].name
+    }
+
+    min_replicas = 1
+    max_replicas = 5
+
+    metric {
+      type = "Resource"
+      resource {
+        name = "cpu"
+        target {
+          type                = "Utilization"
+          average_utilization = 50
         }
       }
     }

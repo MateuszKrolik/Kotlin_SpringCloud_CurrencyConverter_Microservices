@@ -1,3 +1,4 @@
 .env
 terraform.tfvars
 values.secret.yaml
+values.yaml

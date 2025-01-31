@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: currency-update
+  labels:
+    app: {{ include "currency-services.name" . }}-currency-update
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+spec:
+  schedule: "* * * * *"  # Runs every minute
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ include "currency-services.name" . }}-currency-update
+        spec:
+          containers:
+            - name: currency-update
+              image: "postgres:17-alpine"
+              command: ["/bin/sh"]
+              args: ["-c", "PGPASSWORD=$DB_PASSWORD psql -h $DB_HOSTNAME -U $DB_USERNAME -d $DB_NAME -c 'SELECT * FROM currency_exchange;' && sleep 60"]
+              env:
+                - name: DB_HOSTNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-secret
+                      key: dbHostname
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-secret
+                      key: dbPort
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-secret
+                      key: dbName
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-secret
+                      key: dbUsername
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Release.Name }}-secret
+                      key: dbPassword
+              resources:
+                requests:
+                  cpu: "250m"
+                  memory: "512Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "1Gi"
+              envFrom:
+                - secretRef:
+                    name: {{ .Release.Name }}-secret
+          restartPolicy: OnFailure
